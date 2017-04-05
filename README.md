@@ -1,44 +1,23 @@
-# Poltergeist - A PhantomJS driver for Capybara #
+# Badook - A [WebDriver Wire Protocol](https://w3c.github.io/webdriver/webdriver-spec.html) driver for Capybara #
 
-[![Build Status](https://secure.travis-ci.org/teampoltergeist/poltergeist.svg)](http://travis-ci.org/teampoltergeist/poltergeist)
-
-Poltergeist is a driver for [Capybara](https://github.com/jnicklas/capybara). It allows you to
+Badook is a driver for [Capybara](https://github.com/jnicklas/capybara). It allows you to
 run your Capybara tests on a headless [WebKit](http://webkit.org) browser,
 provided by [PhantomJS](http://phantomjs.org/).
-
-**If you're viewing this at https://github.com/teampoltergeist/poltergeist,
-you're reading the documentation for the master branch.
-[View documentation for the latest release
-(1.13.0).](https://github.com/teampoltergeist/poltergeist/tree/v1.13.0)**
-
-## Getting help ##
-
-Questions should be posted [on Stack
-Overflow, using the 'poltergeist' tag](http://stackoverflow.com/questions/tagged/poltergeist).
-
-Bug reports should be posted [on
-GitHub](https://github.com/teampoltergeist/poltergeist/issues) (and be sure
-to read the bug reporting guidance below).
 
 ## Installation ##
 
 Add this line to your Gemfile and run `bundle install`:
 
 ``` ruby
-gem 'poltergeist'
+gem 'badook'
 ```
 
 In your test setup add:
 
 ``` ruby
-require 'capybara/poltergeist'
-Capybara.javascript_driver = :poltergeist
+require 'capybara/badook'
+Capybara.javascript_driver = :badook
 ```
-
-If you were previously using the `:rack_test` driver, be aware that
-your app will now run in a separate thread and this can have
-consequences for transactional tests. [See the Capybara README for more
-detail](https://github.com/jnicklas/capybara/blob/master/README.md#transactions-and-database-setup).
 
 ## Installing PhantomJS ##
 
@@ -71,17 +50,7 @@ take quite a long time as it has to build WebKit.
 * Extract and cd in
 * `./build.sh`
 
-(See also the [PhantomJS building
-guide](http://phantomjs.org/build.html).)
-
-## Compatibility ##
-
-Poltergeist runs on MRI 1.9, JRuby 1.9 and Rubinius 1.9. Poltergeist
-and PhantomJS are currently supported on Mac OS X, Linux, and Windows
-platforms.
-
-Ruby 1.8 is no longer supported. The last release to support Ruby 1.8
-was 1.0.2, so you should use that if you still need Ruby 1.8 support.
+(See also the [PhantomJS building guide](http://phantomjs.org/build.html).)
 
 ## Running on a CI ##
 

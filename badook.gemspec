@@ -1,17 +1,17 @@
 lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 
-require 'capybara/poltergeist/version'
+require 'capybara/badook/version'
 
 Gem::Specification.new do |s|
-  s.name          = 'poltergeist'
-  s.version       = Capybara::Poltergeist::VERSION
+  s.name          = 'badook'
+  s.version       = Capybara::Badook::VERSION
   s.platform      = Gem::Platform::RUBY
-  s.authors       = ['Jon Leighton']
-  s.email         = ['j@jonathanleighton.com']
-  s.homepage      = 'https://github.com/teampoltergeist/poltergeist'
+  s.authors       = ['Simon Vocella']
+  s.email         = ['voxsim@gmail.com']
+  s.homepage      = 'https://github.com/voxsim/badook'
   s.summary       = 'PhantomJS driver for Capybara'
-  s.description   = 'Poltergeist is a driver for Capybara that allows you to '\
+  s.description   = 'Badook is a driver for Capybara that allows you to '\
                     'run your tests on a headless WebKit browser, provided by '\
                     'PhantomJS.'
   s.license       = 'MIT'
@@ -30,9 +30,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake'
   s.add_development_dependency 'image_size',         '~> 1.0'
   s.add_development_dependency 'pdf-reader',         '~> 1.3', '>= 1.3.3'
-  s.add_development_dependency 'coffee-script',      '~> 2.2'
-  s.add_development_dependency 'guard-coffeescript', '~> 2.0.0'
-  s.add_development_dependency 'coffee-script-source', '~>1.12.2'
-  s.add_development_dependency 'listen', '~> 3.0.6'  # listen is required by guard and listen 3.1.0 requires ruby 2.2+
   s.add_development_dependency 'erubi'  # required by rbx
 end

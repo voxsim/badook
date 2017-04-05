@@ -11,34 +11,46 @@ module Capybara::Poltergeist
 
     after { @driver.reset! }
 
-    def session_url(path)
-      server = @session.server
-      "http://#{server.host}:#{server.port}#{path}"
+    it 'visits url' do
+      @driver.visit 'http://www.google.it'
+
+      expect(@driver.current_url).to eq('http://www.google.it/')
+    end
+
+    it 'finds an element with xpath selector' do
+    end
+
+    it 'finds an element with css selector' do
+      @driver.visit 'http://www.xpeppers.com'
+      elements = @driver.find_css '.container'
+      p '****'
+      p elements
+      p 'START ****'
+      elements.map { |element|
+        p element.all_text
+        p '****'
+      }
     end
 
     it 'supports a custom phantomjs path' do
-      begin
-        file = POLTERGEIST_ROOT + '/spec/support/custom_phantomjs_called'
-        path = POLTERGEIST_ROOT + '/spec/support/custom_phantomjs'
+      file = POLTERGEIST_ROOT + '/spec/support/custom_phantomjs_called'
+      path = POLTERGEIST_ROOT + '/spec/support/custom_phantomjs'
 
-        FileUtils.rm_f file
+      FileUtils.rm_f file
 
-        driver = Capybara::Poltergeist::Driver.new(nil, phantomjs: path)
-        driver.browser
+      driver = Capybara::Poltergeist::Driver.new(nil, phantomjs: path)
+      driver.phantomjs
 
-        # If the correct custom path is called, it will touch the file.
-        # We allow at least 10 secs for this to happen before failing.
+      # If the correct custom path is called, it will touch the file.
+      # We allow at least 10 secs for this to happen before failing.
 
-        tries = 0
-        until File.exist?(file) || tries == 100
-          sleep 0.1
-          tries += 1
-        end
-
-        expect(File.exist?(file)).to be true
-      ensure
-        driver.quit if driver
+      tries = 0
+      until File.exist?(file) || tries == 100
+        sleep 0.1
+        tries += 1
       end
+
+      expect(File.exist?(file)).to be true
     end
 
     context 'output redirection' do
@@ -61,12 +73,12 @@ module Capybara::Poltergeist
       end
 
       it 'is threadsafe in how it captures console.log' do
-        pending("JRuby and Rubinius do not support the :out parameter to Process.spawn, so there is no threadsafe way to redirect output") unless Capybara::Poltergeist.mri?
+        pending('JRuby and Rubinius do not support the :out parameter to Process.spawn, so there is no threadsafe way to redirect output') unless Capybara::Poltergeist.mri?
 
         # Write something to STDOUT right before Process.spawn is called
         allow(Process).to receive(:spawn).and_wrap_original do |m,*args|
-          STDOUT.puts "1"
-          $stdout.puts "2"
+          STDOUT.puts '1'
+          $stdout.puts '2'
           m.call(*args)
         end
 
@@ -82,11 +94,6 @@ module Capybara::Poltergeist
       expect { @driver.browser.command('exit') }.to raise_error(DeadClient)
       @session.visit('/')
       expect(@driver.html).to include('Hello world')
-    end
-
-    it 'quits silently before visit call' do
-      driver = Capybara::Poltergeist::Driver.new(nil)
-      expect { driver.quit }.not_to raise_error
     end
 
     it 'has a viewport size of 1024x768 by default' do

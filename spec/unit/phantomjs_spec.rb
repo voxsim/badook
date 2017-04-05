@@ -1,10 +1,9 @@
 require 'spec_helper'
 
 module Capybara::Poltergeist
-  describe Client do
-    let(:server) { double(port: 6000) }
+  describe PhantomJS do
     let(:client_params) { {} }
-    subject { Client.new(server, client_params) }
+    subject { PhantomJS.new(client_params) }
 
     context '#initialize' do
       it 'raises an error if phantomjs is too old' do
@@ -46,7 +45,7 @@ module Capybara::Poltergeist
 
     unless Capybara::Poltergeist.windows?
       it 'forcibly kills the child if it does not respond to SIGTERM' do
-        client = Client.new(server)
+        client = PhantomJS.new
 
         allow(Process).to receive_messages(spawn: 5678)
         allow(Process).to receive(:wait) do

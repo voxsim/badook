@@ -1,19 +1,16 @@
-require "timeout"
-require "capybara/poltergeist/utility"
+require 'timeout'
+require 'capybara/poltergeist/utility'
 require 'cliver'
 
-module Capybara::Poltergeist
-  class Client
-    PHANTOMJS_SCRIPT  = File.expand_path('../client/compiled/main.js', __FILE__)
-    PHANTOMJS_VERSION = ['>= 1.8.1', '< 3.0']
-    PHANTOMJS_NAME    = 'phantomjs'
-
+module Capybara::Badook
+  class PhantomJS
+    PHANTOMJS_NAME = 'phantomjs'
     KILL_TIMEOUT = 2 # seconds
 
     def self.start(*args)
-      client = new(*args)
-      client.start
-      client
+      phantomjs = new(*args)
+      phantomjs.start
+      phantomjs
     end
 
     # Returns a proc, that when called will attempt to kill the given process.
@@ -23,7 +20,7 @@ module Capybara::Poltergeist
     def self.process_killer(pid)
       proc do
         begin
-          if Capybara::Poltergeist.windows?
+          if Capybara::Badook.windows?
             Process.kill('KILL', pid)
           else
             Process.kill('TERM', pid)
@@ -40,12 +37,11 @@ module Capybara::Poltergeist
       end
     end
 
-    attr_reader :pid, :server, :path, :window_size, :phantomjs_options
+    attr_reader :pid, :path, :window_size, :phantomjs_options
 
-    def initialize(server, options = {})
-      @server            = server
+    def initialize(options = {})
       @path              = Cliver::detect((options[:path] || PHANTOMJS_NAME), *['>=2.1.0', '< 3.0'])
-      @path            ||= Cliver::detect!((options[:path] || PHANTOMJS_NAME), *PHANTOMJS_VERSION).tap do
+      @path            ||= Cliver::detect!((options[:path] || PHANTOMJS_NAME), *['>= 1.8.1', '< 3.0']).tap do
         warn "You're running an old version of PhantomJS, update to >= 2.1.1 for a better experience."
       end
 
@@ -63,13 +59,20 @@ module Capybara::Poltergeist
       }
 
       process_options = {}
-      process_options[:pgroup] = true unless Capybara::Poltergeist.windows?
-      process_options[:out] = @write_io if Capybara::Poltergeist.mri?
+      process_options[:pgroup] = true unless Capybara::Badook.windows?
+      process_options[:out] = @write_io if Capybara::Badook.mri?
 
       redirect_stdout do
         @pid = Process.spawn(*command.map(&:to_s), process_options)
-        ObjectSpace.define_finalizer(self, self.class.process_killer(@pid))
+        sleep 1 # wait for phantomjs to startup properly
       end
+
+      ObjectSpace.define_finalizer(self, self.class.process_killer(@pid))
+    end
+
+    # TODO make this parametric
+    def base_url
+      'http://localhost:8910'
     end
 
     def stop
@@ -89,8 +92,6 @@ module Capybara::Poltergeist
     def command
       parts = [path]
       parts.concat phantomjs_options
-      parts << PHANTOMJS_SCRIPT
-      parts << server.port
       parts.concat window_size
       parts
     end
@@ -103,7 +104,7 @@ module Capybara::Poltergeist
     # lose all the output from child. Process.popen can be used here and seems
     # it works with JRuby but I've experienced strange mistakes on Rubinius.
     def redirect_stdout
-      if Capybara::Poltergeist.mri?
+      if Capybara::Badook.mri?
         yield
       else
         begin

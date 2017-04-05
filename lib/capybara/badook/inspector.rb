@@ -1,4 +1,4 @@
-module Capybara::Poltergeist
+module Capybara::Badook
   class Inspector
     BROWSERS     = %w(chromium chromium-browser google-chrome open)
     DEFAULT_PORT = 9664
@@ -28,7 +28,7 @@ module Capybara::Poltergeist
       else
         raise Error, "Could not find a browser executable to open #{url(scheme)}. " \
                      "You can specify one manually using e.g. `:inspector => 'chromium'` " \
-                     "as a configuration option for Poltergeist."
+                     "as a configuration option for Badook."
       end
     end
 
