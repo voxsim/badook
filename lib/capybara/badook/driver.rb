@@ -154,8 +154,6 @@ module Capybara::Badook
       true
     end
 
-    # TODO support url_blacklist ?
-    # TODO support url_whitelist ?
     def reset!
       delete_all_cookie
       delete_session
