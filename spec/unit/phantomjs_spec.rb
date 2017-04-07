@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Capybara::Poltergeist
+module Capybara::Badook
   describe PhantomJS do
     let(:client_params) { {} }
     subject { PhantomJS.new(client_params) }
@@ -43,7 +43,7 @@ module Capybara::Poltergeist
       end
     end
 
-    unless Capybara::Poltergeist.windows?
+    unless Capybara::Badook.windows?
       it 'forcibly kills the child if it does not respond to SIGTERM' do
         client = PhantomJS.new
 

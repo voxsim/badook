@@ -41,18 +41,8 @@ module Capybara::Badook
     end
 
     def [](name)
-      # # Although the attribute matters, the property is consistent. Return that in
-      # # preference to the attribute for links and images.
-      # if (tag_name == 'img' and name == 'src') or (tag_name == 'a' and name == 'href' )
-      #    #if attribute exists get the property
-      #    value = command(:attribute, name) && command(:property, name)
-      #    return value
-      # end
-
-      # value = property(name)
-      # value = command(:attribute, name) if value.nil? || value.is_a?(Hash)
-
-      # value
+      response = get "/session/#{session_id}/element/#{element_id}/attribute/#{name}"
+      response['value']
     end
 
     def attributes

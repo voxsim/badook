@@ -1,5 +1,4 @@
 require 'timeout'
-require 'capybara/poltergeist/utility'
 require 'cliver'
 
 module Capybara::Badook

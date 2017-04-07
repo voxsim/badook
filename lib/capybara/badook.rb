@@ -7,11 +7,11 @@ require 'capybara'
 
 module Capybara
   module Badook
-    require 'capybara/poltergeist/utility'
-    require 'capybara/poltergeist/driver'
-    require 'capybara/poltergeist/node'
-    require 'capybara/poltergeist/phantomjs'
-    require 'capybara/poltergeist/inspector'
+    require 'capybara/badook/utility'
+    require 'capybara/badook/driver'
+    require 'capybara/badook/node'
+    require 'capybara/badook/phantomjs'
+    require 'capybara/badook/inspector'
   end
 end
 

@@ -2,10 +2,10 @@ require 'capybara/spec/test_app'
 
 class TestApp
   configure do
-    set :protection, :except => :frame_options
+    set :protection, except: :frame_options
   end
-  POLTERGEIST_VIEWS  = File.dirname(__FILE__) + "/views"
-  POLTERGEIST_PUBLIC = File.dirname(__FILE__) + "/public"
+  BADOOK_VIEWS  = File.dirname(__FILE__) + '/views'
+  BADOOK_PUBLIC = File.dirname(__FILE__) + '/public'
 
   helpers do
     def requires_credentials(login, password)
@@ -15,75 +15,76 @@ class TestApp
     end
 
     def authorized?(login, password)
-      @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-      @auth.provided? and @auth.basic? and @auth.credentials and @auth.credentials == [login, password]
+      @auth ||= Rack::Auth::Basic::Request.new(request.env)
+      @auth.provided? && @auth.basic? &&
+        @auth.credentials && @auth.credentials == [login, password]
     end
   end
 
-  get '/poltergeist/test.js' do
-    File.read("#{POLTERGEIST_PUBLIC}/test.js")
+  get '/badook/test.js' do
+    File.read("#{BADOOK_PUBLIC}/test.js")
   end
 
-  get '/poltergeist/jquery.min.js' do
-    File.read("#{POLTERGEIST_PUBLIC}/jquery-1.11.3.min.js")
+  get '/badook/jquery.min.js' do
+    File.read("#{BADOOK_PUBLIC}/jquery-1.11.3.min.js")
   end
 
-  get '/poltergeist/jquery-ui.min.js' do
-    File.read("#{POLTERGEIST_PUBLIC}/jquery-ui-1.11.4.min.js")
+  get '/badook/jquery-ui.min.js' do
+    File.read("#{BADOOK_PUBLIC}/jquery-ui-1.11.4.min.js")
   end
 
-  get '/poltergeist/unexist.png' do
+  get '/badook/unexist.png' do
     halt 404
   end
 
-  get '/poltergeist/status/:status' do
+  get '/badook/status/:status' do
     status params['status']
     render_view 'with_different_resources'
   end
 
-  get '/poltergeist/redirect_to_headers' do
-    redirect '/poltergeist/headers'
+  get '/badook/redirect_to_headers' do
+    redirect '/badook/headers'
   end
 
-  get '/poltergeist/redirect' do
-    redirect '/poltergeist/with_different_resources'
+  get '/badook/redirect' do
+    redirect '/badook/with_different_resources'
   end
 
-  get '/poltergeist/get_cookie' do
+  get '/badook/get_cookie' do
     request.cookies['capybara']
   end
 
-  get '/poltergeist/slow' do
+  get '/badook/slow' do
     sleep 0.2
-    "slow page"
+    'slow page'
   end
 
-  get '/poltergeist/really_slow' do
+  get '/badook/really_slow' do
     sleep 3
-    "really slow page"
+    'really slow page'
   end
 
-  get '/poltergeist/basic_auth' do
+  get '/badook/basic_auth' do
     requires_credentials('login', 'pass')
     render_view :basic_auth
   end
 
-  post '/poltergeist/post_basic_auth' do
+  post '/badook/post_basic_auth' do
     requires_credentials('login', 'pass')
     'Authorized POST request'
   end
 
-  get '/poltergeist/cacheable' do
+  get '/badook/cacheable' do
     cache_control :public, max_age: 60
-    etag "deadbeef"
+    etag 'deadbeef'
     'Cacheable request'
   end
 
-  get '/poltergeist/:view' do |view|
+  get '/badook/:view' do |view|
     render_view view
   end
 
-  get '/poltergeist/arbitrary_path/:status/:remaining_path' do
+  get '/badook/arbitrary_path/:status/:remaining_path' do
     status params['status'].to_i
     params['remaining_path']
   end
@@ -91,6 +92,6 @@ class TestApp
   protected
 
   def render_view(view)
-    erb File.read("#{POLTERGEIST_VIEWS}/#{view}.erb")
+    erb File.read("#{BADOOK_VIEWS}/#{view}.erb")
   end
 end

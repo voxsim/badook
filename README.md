@@ -68,7 +68,7 @@ to install.
 
 ## What's supported? ##
 
-Poltergeist supports all the mandatory features for a Capybara driver,
+Badook supports all the mandatory features for a Capybara driver,
 and the following optional features:
 
 * `page.evaluate_script` and `page.execute_script`
@@ -126,16 +126,16 @@ You can register this debugger driver with a different name and set it
 as the current javascript driver. By example, in your helper file:
 
 ```ruby
-Capybara.register_driver :poltergeist_debug do |app|
-  Capybara::Poltergeist::Driver.new(app, :inspector => true)
+Capybara.register_driver :badook_debug do |app|
+  Capybara::Badook::Driver.new(app, :inspector => true)
 end
 
-# Capybara.javascript_driver = :poltergeist
-Capybara.javascript_driver = :poltergeist_debug
+# Capybara.javascript_driver = :badook
+Capybara.javascript_driver = :badook_debug
 ```
 
 [Read more
-here](http://jonathanleighton.com/articles/2012/poltergeist-0-6-0/)
+here](http://jonathanleighton.com/articles/2012/badook-0-6-0/)
 
 ### Manipulating request headers ###
 
@@ -143,9 +143,9 @@ You can manipulate HTTP request headers with these methods:
 
 ``` ruby
 page.driver.headers # => {}
-page.driver.headers = { "User-Agent" => "Poltergeist" }
+page.driver.headers = { "User-Agent" => "Badook" }
 page.driver.add_headers("Referer" => "https://example.com")
-page.driver.headers # => { "User-Agent" => "Poltergeist", "Referer" => "https://example.com" }
+page.driver.headers # => { "User-Agent" => "Badook", "Referer" => "https://example.com" }
 ```
 
 Notice that `headers=` will overwrite already set headers. You should use
@@ -155,11 +155,11 @@ be automatically cleared at the end of the test. You have ability to set headers
 only for the initial request:
 
 ``` ruby
-page.driver.headers = { "User-Agent" => "Poltergeist" }
+page.driver.headers = { "User-Agent" => "Badook" }
 page.driver.add_header("Referer", "http://example.com", permanent: false)
-page.driver.headers # => { "User-Agent" => "Poltergeist", "Referer" => "http://example.com" }
+page.driver.headers # => { "User-Agent" => "Badook", "Referer" => "http://example.com" }
 visit(login_path)
-page.driver.headers # => { "User-Agent" => "Poltergeist" }
+page.driver.headers # => { "User-Agent" => "Badook" }
 ```
 
 This way your temporary headers will be sent only for the initial request, and related 30x redirects. All
@@ -219,12 +219,12 @@ See more about [sendEvent](http://phantomjs.org/api/webpage/method/send-event.ht
 
 ## Customization ##
 
-You can customize the way that Capybara sets up Poltergeist via the following code in your
+You can customize the way that Capybara sets up Badook via the following code in your
 test setup:
 
 ``` ruby
-Capybara.register_driver :poltergeist do |app|
-  Capybara::Poltergeist::Driver.new(app, options)
+Capybara.register_driver :badook do |app|
+  Capybara::Badook::Driver.new(app, options)
 end
 ```
 
@@ -232,7 +232,7 @@ end
 
 *   `:phantomjs` (String) - A custom path to the phantomjs executable
 *   `:debug` (Boolean) - When true, debug output is logged to `STDERR`.
-    Some debug info from the PhantomJS portion of Poltergeist is also
+    Some debug info from the PhantomJS portion of Badook is also
     output, but this goes to `STDOUT` due to technical limitations.
 *   `:logger` (Object responding to `puts`) - When present, debug output is written to this object
 *   `:phantomjs_logger` (`IO` object) - Where the `STDOUT` from PhantomJS is written to. This is
@@ -255,7 +255,7 @@ end
 *   `:url_whitelist` (Array) - Default session url whitelist - expressed as an array of strings to match against requested URLs.
 
 ### URL Blacklisting & Whitelisting ###
-Poltergeist supports URL blacklisting, which allows you
+Badook supports URL blacklisting, which allows you
 to prevent scripts from running on designated domains:
 
 ```ruby
@@ -291,8 +291,8 @@ If your crash happens every time, you should read the [PhantomJS crash
 reporting
 guide](http://phantomjs.org/crash-reporting.html) and file
 a bug against PhantomJS. Feel free to also file a bug against
-Poltergeist in case there are workarounds that can be implemented within
-Poltergeist. Also, if lots of Poltergeist users are experiencing the
+Badook in case there are workarounds that can be implemented within
+Badook. Also, if lots of Badook users are experiencing the
 same crash then fixing it will move up the priority list.
 
 If your crash is sporadic, there is less that can be done. Often these
@@ -300,7 +300,7 @@ issues are very complicated and difficult to track down. It may be that
 the crash has already been fixed in a newer version of WebKit that will
 eventually find its way into PhantomJS. It's still worth reporting your
 bug against PhantomJS, but it's probably not worth filing a bug against
-Poltergeist as there's not much we can do.
+Badook as there's not much we can do.
 
 If you experience sporadic crashes a lot, it may be worth configuring
 your CI to automatically re-run failing tests before reporting a failed
@@ -308,10 +308,10 @@ build.
 
 ### MouseEventFailed errors ###
 
-When Poltergeist clicks on an element, rather than generating a DOM
+When Badook clicks on an element, rather than generating a DOM
 click event, it actually generates a "proper" click. This is much closer
 to what happens when a real user clicks on the page - but it means that
-Poltergeist must scroll the page to where the element is, and work out
+Badook must scroll the page to where the element is, and work out
 the correct co-ordinates to click. If the element is covered up by
 another element, the click will fail (this is a good thing - because
 your user won't be able to click a covered up element either).
@@ -320,7 +320,7 @@ Sometimes there can be issues with this behavior. If you have problems,
 it's worth taking screenshots of the page and trying to work out what's
 going on. If your click is failing, but you're not getting a
 `MouseEventFailed` error, then you can turn on the `:debug` option and look
-in the output to see what co-ordinates Poltergeist is using for the
+in the output to see what co-ordinates Badook is using for the
 click. You can then cross-reference this with a screenshot to see if
 something is obviously wrong.
 
@@ -359,14 +359,14 @@ you may expect.
 
 ### General troubleshooting hints ###
 
-* Configure Poltergeist with `:debug` turned on so you can see its
+* Configure Badook with `:debug` turned on so you can see its
   communication with PhantomJS.
 * Take screenshots to figure out what the state of your page is when the
   problem occurs.
 * Use the remote web inspector in case it provides any useful insight
-* Consider downloading the Poltergeist source and using `console.log`
+* Consider downloading the Badook source and using `console.log`
   debugging to figure out what's going on inside PhantomJS. (This will
-  require an understanding of the Poltergeist source code and PhantomJS,
+  require an understanding of the Badook source code and PhantomJS,
   so it's only for the committed!)
 
 ### Filing a bug ###
@@ -379,10 +379,10 @@ Include as much information as possible. For example:
 
 * Specific steps to reproduce where possible (failing tests are even
   better)
-* The output obtained from running Poltergeist with `:debug` turned on
+* The output obtained from running Badook with `:debug` turned on
 * Screenshots
 * Stack traces if there are any Ruby on JavaScript exceptions generated
-* The Poltergeist and PhantomJS version numbers used
+* The Badook and PhantomJS version numbers used
 * The operating system name and version used
 
 ## Changes ##

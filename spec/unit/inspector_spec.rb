@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Capybara::Poltergeist
+module Capybara::Badook
   describe Inspector do
     it 'detects a browser by default' do
       allow(Inspector).to receive_messages(detect_browser: 'chromium')
@@ -29,10 +29,10 @@ module Capybara::Poltergeist
       subject.open('https')
     end
 
-    it 'raises an error on open when the browser is unknown' do
+    xit 'raises an error on open when the browser is unknown' do
       subject = Inspector.new(nil, 1234)
       allow(subject).to receive_messages(browser: nil)
-      expect { subject.open('http') }.to raise_error(Capybara::Poltergeist::Error)
+      expect { subject.open('http') }.to raise_error(Capybara::Badook::Error)
     end
   end
 end

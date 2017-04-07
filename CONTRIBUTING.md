@@ -44,5 +44,5 @@ following things:
   now squashed.
 * Please try to pay attention to and follow the existing coding style.
 
-Thanks! It's really great when people help with Poltergeist's
+Thanks! It's really great when people help with Badook's
 development.

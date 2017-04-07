@@ -1,6 +1,7 @@
 require 'uri'
 require 'json'
 require 'rest-client'
+require 'base64'
 
 module Capybara::Badook
   class Driver < Capybara::Driver::Base
@@ -14,6 +15,8 @@ module Capybara::Badook
       @inspector = nil
       @phantomjs = nil
       @session_id = nil
+      @status_code = nil
+      @response_headers = nil
     end
 
     # Begin: implementation of Capybara::Driver::Base
@@ -36,15 +39,18 @@ module Capybara::Badook
     end
 
     def html
-      get "/session/#{session_id}/source"
+      response = get "/session/#{session_id}/source"
+      response['value']
     end
 
     def go_back
-      post "/session/#{session_id}/back"
+      response = post "/session/#{session_id}/back"
+      response['value']
     end
 
     def go_forward
-      post "/session/#{session_id}/forward"
+      response = post "/session/#{session_id}/forward"
+      response['value']
     end
 
     # TODO make this async?
@@ -59,92 +65,93 @@ module Capybara::Badook
     end
 
     # TODO save base64 img in path
-    def save_screenshot(path, _)
-      get "/session/#{session_id}/screenshot"
+    def save_screenshot(path, _={})
+      response = get "/session/#{session_id}/screenshot"
+      File.open(path, 'wb') do |f|
+        f.write(Base64.decode64(response['value']))
+      end
     end
 
-    # TODO how to implement that?
-    # def response_headers
-    #   browser.response_headers
+    def response_headers
+      @response_headers
+    end
+
+    def status_code
+      @status_code
+    end
+
+    # def switch_to_frame(locator)
+    #   browser.switch_to_frame(locator)
     # end
 
-    # TODO how to implement that?
-    # def status_code
-    #   browser.status_code
+    # def current_window_handle
+    #   browser.window_handle
     # end
 
-    def switch_to_frame(locator)
-      browser.switch_to_frame(locator)
-    end
+    # def window_size(handle)
+    #   within_window(handle) do
+    #     evaluate_script('[window.innerWidth, window.innerHeight]')
+    #   end
+    # end
 
-    def current_window_handle
-      browser.window_handle
-    end
+    # def resize_window_to(handle, width, height)
+    #   within_window(handle) do
+    #     resize(width, height)
+    #   end
+    # end
 
-    def window_size(handle)
-      within_window(handle) do
-        evaluate_script('[window.innerWidth, window.innerHeight]')
-      end
-    end
+    # def maximize_window(handle)
+    #   resize_window_to(handle, *screen_size)
+    # end
 
-    def resize_window_to(handle, width, height)
-      within_window(handle) do
-        resize(width, height)
-      end
-    end
+    # def close_window(handle)
+    #   browser.close_window(handle)
+    # end
 
-    def maximize_window(handle)
-      resize_window_to(handle, *screen_size)
-    end
+    # def window_handles
+    #   browser.window_handles
+    # end
 
-    def close_window(handle)
-      browser.close_window(handle)
-    end
+    # def open_new_window
+    #   browser.open_new_window
+    # end
 
-    def window_handles
-      browser.window_handles
-    end
+    # def switch_to_window(handle)
+    #   browser.switch_to_window(handle)
+    # end
 
-    def open_new_window
-      browser.open_new_window
-    end
+    # def within_window(name)
+    #   browser.within_window(name)
+    # end
 
-    def switch_to_window(handle)
-      browser.switch_to_window(handle)
-    end
+    # def no_such_window_error
+    #   NoSuchWindowError
+    # end
 
-    def within_window(name)
-      browser.within_window(name)
-    end
+    # def accept_modal(type, options = {})
+    #   case type
+    #   when :confirm
+    #     browser.accept_confirm
+    #   when :prompt
+    #     browser.accept_prompt options[:with]
+    #   end
 
-    def no_such_window_error
-      NoSuchWindowError
-    end
+    #   yield if block_given?
 
-    def accept_modal(type, options = {})
-      case type
-      when :confirm
-        browser.accept_confirm
-      when :prompt
-        browser.accept_prompt options[:with]
-      end
+    #   find_modal(options)
+    # end
 
-      yield if block_given?
+    # def dismiss_modal(type, options = {})
+    #   case type
+    #   when :confirm
+    #     browser.dismiss_confirm
+    #   when :prompt
+    #     browser.dismiss_prompt
+    #   end
 
-      find_modal(options)
-    end
-
-    def dismiss_modal(type, options = {})
-      case type
-      when :confirm
-        browser.dismiss_confirm
-      when :prompt
-        browser.dismiss_prompt
-      end
-
-      yield if block_given?
-      find_modal(options)
-    end
+    #   yield if block_given?
+    #   find_modal(options)
+    # end
 
     def invalid_element_errors
       []
@@ -154,8 +161,6 @@ module Capybara::Badook
       true
     end
 
-    # TODO support url_blacklist ?
-    # TODO support url_whitelist ?
     def reset!
       delete_all_cookie
       delete_session
@@ -278,16 +283,20 @@ module Capybara::Badook
           payload: body,
           headers: headers
         )
+        @status_code = http_response.code
+        @response_headers = http_response.headers
         JSON.parse(http_response)
       rescue RestClient::ExceptionWithResponse => error
         if [301, 302, 307].include? error.response.code
+          error.response
           Response.from(error.response)
         else
-          raise Error.new(error)
+          error
+          # raise Error.new(error)
         end
       rescue RestClient::Exception => error
-        p error
-        raise Error.new(error)
+        error
+        # raise Error.new(error)
       end
     end
   end
