@@ -7,6 +7,9 @@ require 'capybara'
 
 module Capybara
   module Badook
+    require 'capybara/badook/error'
+    require 'capybara/badook/response'
+    require 'capybara/badook/http_client'
     require 'capybara/badook/utility'
     require 'capybara/badook/driver'
     require 'capybara/badook/node'

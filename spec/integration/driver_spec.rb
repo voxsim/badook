@@ -12,6 +12,10 @@ module Capybara::Badook
 
     after { @driver.reset! }
 
+    it 'generates session_id' do
+      expect(@driver.session_id).not_to be_nil
+    end
+
     it 'visits url and get current url' do
       @driver.visit url('/')
 
