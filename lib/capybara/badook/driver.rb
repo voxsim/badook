@@ -4,12 +4,11 @@ require 'base64'
 module Capybara
   module Badook
     class Driver < Capybara::Driver::Base
-      attr_reader :app, :options, :inspector, :phantomjs, :session_id, :last_response
+      attr_reader :app, :options, :phantomjs, :session_id, :last_response
 
       def initialize(app, options = {})
         @app       = app
         @options   = options
-        @inspector = nil
         @phantomjs = nil
         @session_id = nil
         @last_response = nil
@@ -164,40 +163,19 @@ module Capybara
 
       # End: implementation of Capybara::Driver::Base
 
-      def inspector
-        @inspector ||= options[:inspector] && Inspector.new(options[:inspector])
-      end
-
       def phantomjs
         @phantomjs ||= PhantomJS.start(
           path: options[:phantomjs],
           window_size: options[:window_size],
-          phantomjs_options: phantomjs_options,
-          phantomjs_logger: phantomjs_logger
+          phantomjs_options: options[:phantomjs_options],
+          phantomjs_logger: options[:phantomjs_logger],
+          inspector: options[:inspector]
         )
-      end
-
-      def phantomjs_options
-        list = options[:phantomjs_options] || []
-
-        # PhantomJS defaults to only using SSLv3, which since POODLE (Oct 2014)
-        # many sites have dropped from their supported protocols (eg PayPal,
-        # Braintree).
-        list += ['--ignore-ssl-errors=yes'] unless list.grep(/ignore-ssl-errors/).any?
-        list += ['--wd']
-        list += ['--ssl-protocol=TLSv1'] unless list.grep(/ssl-protocol/).any?
-        list += ["--remote-debugger-port=#{inspector.port}", '--remote-debugger-autorun=yes'] if inspector
-        list
       end
 
       # logger should be an object that responds to puts, or nil
       def logger
         options[:logger] || (options[:debug] && STDERR)
-      end
-
-      # logger should be an object that behaves like IO or nil
-      def phantomjs_logger
-        options.fetch(:phantomjs_logger, nil)
       end
 
       def session_id

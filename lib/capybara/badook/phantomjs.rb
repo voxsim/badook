@@ -36,17 +36,19 @@ module Capybara::Badook
       end
     end
 
-    attr_reader :pid, :path, :window_size, :phantomjs_options
+    attr_reader :pid, :path, :window_size, :phantomjs_options, :inspector
 
     def initialize(options = {})
       @path              = Cliver::detect((options[:path] || PHANTOMJS_NAME), *['>=2.1.0', '< 3.0'])
       @path            ||= Cliver::detect!((options[:path] || PHANTOMJS_NAME), *['>= 1.8.1', '< 3.0']).tap do
-        warn "You're running an old version of PhantomJS, update to >= 2.1.1 for a better experience."
+        warn 'You\'re running an old version of PhantomJS, update to >= 2.1.1 for a better experience.'
       end
 
-      @window_size       = options[:window_size]       || [1024, 768]
-      @phantomjs_options = options[:phantomjs_options] || []
-      @phantomjs_logger  = options[:phantomjs_logger]  || $stdout
+      @inspector = options[:inspector] && Inspector.new(options[:inspector])
+
+      @window_size       = options[:window_size] || [1024, 768]
+      @phantomjs_options = set_phantomjs_options(options[:phantomjs_options])
+      @phantomjs_logger  = options[:phantomjs_logger] || $stdout
     end
 
     def start
@@ -93,6 +95,22 @@ module Capybara::Badook
       parts.concat phantomjs_options
       parts.concat window_size
       parts
+    end
+
+    def phantomjs_options
+      @phantomjs_options
+    end
+
+    def logger
+      @phantomjs_logger
+    end
+
+    def window_size
+      @window_size
+    end
+
+    def inspector
+      @inspector
     end
 
     private
@@ -143,6 +161,19 @@ module Capybara::Badook
           raise unless RUBY_ENGINE == 'jruby'
         end
       end
+    end
+
+    def set_phantomjs_options(phantomjs_options)
+      list = phantomjs_options || []
+
+      # PhantomJS defaults to only using SSLv3, which since POODLE (Oct 2014)
+      # many sites have dropped from their supported protocols (eg PayPal,
+      # Braintree).
+      list += ['--ignore-ssl-errors=yes'] unless list.grep(/ignore-ssl-errors/).any?
+      list += ['--wd']
+      list += ['--ssl-protocol=TLSv1'] unless list.grep(/ssl-protocol/).any?
+      list += ["--remote-debugger-port=#{inspector.port}", '--remote-debugger-autorun=yes'] if inspector
+      list
     end
   end
 end

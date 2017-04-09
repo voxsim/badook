@@ -23,14 +23,11 @@ Gem::Specification.new do |s|
   s.add_dependency 'rest-client'
 
   s.add_runtime_dependency 'capybara',         '~> 2.1'
-  s.add_runtime_dependency 'websocket-driver', '>= 0.2.0'
   s.add_runtime_dependency 'cliver',           '~> 0.3.1'
 
   s.add_development_dependency 'launchy',            '~> 2.0'
   s.add_development_dependency 'rspec',              '~> 3.5.0'
   s.add_development_dependency 'sinatra',            '~> 1.0'
   s.add_development_dependency 'rake'
-  s.add_development_dependency 'image_size',         '~> 1.0'
-  s.add_development_dependency 'pdf-reader',         '~> 1.3', '>= 1.3.3'
-  s.add_development_dependency 'erubi'  # required by rbx
+  # s.add_development_dependency 'erubi'  # required by rbx
 end

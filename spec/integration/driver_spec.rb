@@ -1,6 +1,4 @@
 require 'spec_helper'
-require 'image_size'
-require 'pdf/reader'
 
 module Capybara::Badook
   describe Driver do

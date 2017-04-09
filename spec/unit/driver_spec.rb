@@ -11,12 +11,12 @@ module Capybara::Badook
         expect(subject.logger).to be_nil
       end
 
-      it 'has no inspector' do
-        expect(subject.inspector).to be_nil
+      it 'adds default phantomjs options to driver options' do
+        expect(subject.phantomjs.phantomjs_options).to eq(default_phantomjs_options)
       end
 
-      it 'adds default phantomjs options to driver options' do
-        expect(subject.phantomjs_options).to eq(default_phantomjs_options)
+      it 'has phantomjs windows_size setted to [1024, 768]' do
+        expect(subject.phantomjs.window_size).to eq([1024, 768])
       end
     end
 
@@ -24,7 +24,7 @@ module Capybara::Badook
       subject { Driver.new(nil, phantomjs_options: %w{--hello}) }
 
       it 'is a combination of ssl settings and the provided options' do
-        expect(subject.phantomjs_options).to eq(%w{--hello --ignore-ssl-errors=yes --wd --ssl-protocol=TLSv1})
+        expect(subject.phantomjs.phantomjs_options).to eq(%w{--hello --ignore-ssl-errors=yes --wd --ssl-protocol=TLSv1})
       end
     end
 
@@ -32,21 +32,13 @@ module Capybara::Badook
       subject { Driver.new(nil, phantomjs_options: %w{--ssl-protocol=any --ignore-ssl-errors=no})}
 
       it 'uses the provided ssl-protocol' do
-        expect(subject.phantomjs_options).to include('--ssl-protocol=any')
-        expect(subject.phantomjs_options).not_to include('--ssl-protocol=TLSv1')
+        expect(subject.phantomjs.phantomjs_options).to include('--ssl-protocol=any')
+        expect(subject.phantomjs.phantomjs_options).not_to include('--ssl-protocol=TLSv1')
       end
 
       it 'uses the provided ssl-errors' do
-        expect(subject.phantomjs_options).to include('--ignore-ssl-errors=no')
-        expect(subject.phantomjs_options).not_to include('--ignore-ssl-errors=yes')
-      end
-    end
-
-    context 'with a :logger option' do
-      subject { Driver.new(nil, logger: :my_custom_logger) }
-
-      it 'logs to the logger given' do
-        expect(subject.logger).to eq(:my_custom_logger)
+        expect(subject.phantomjs.phantomjs_options).to include('--ignore-ssl-errors=no')
+        expect(subject.phantomjs.phantomjs_options).not_to include('--ignore-ssl-errors=yes')
       end
     end
 
@@ -54,11 +46,19 @@ module Capybara::Badook
       subject { Driver.new(nil, phantomjs_logger: :my_custom_logger) }
 
       it 'logs to the phantomjs_logger given' do
-        expect(subject.phantomjs_logger).to eq(:my_custom_logger)
+        expect(subject.phantomjs.logger).to eq(:my_custom_logger)
       end
     end
 
-    context 'with a :debug option' do
+    xcontext 'with a :logger option' do
+      subject { Driver.new(nil, logger: :my_custom_logger) }
+
+      it 'logs to the logger given' do
+        expect(subject.logger).to eq(:my_custom_logger)
+      end
+    end
+
+    xcontext 'with a :debug option' do
       subject { Driver.new(nil, debug: true) }
 
       it 'logs to STDERR' do
@@ -76,11 +76,11 @@ module Capybara::Badook
       end
 
       it 'can pause indefinitely' do
-        expect {
+        expect do
           Timeout::timeout(3) do
             subject.pause
           end
-        }.to raise_error(Timeout::Error)
+        end.to raise_error(Timeout::Error)
       end
 
       it 'can pause and resume with keyboard input' do
