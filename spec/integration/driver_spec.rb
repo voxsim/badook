@@ -61,12 +61,12 @@ module Capybara::Badook
       expect(@driver.current_url).to eq(url('/badook/with_js'))
     end
 
-    xit 'evaluates script' do
-      p @driver.evaluate_script('[window.innerWidth, window.innerHeight]')
+    it 'evaluates script' do
+      expect(@driver.evaluate_script('return [window.innerWidth, window.innerHeight]')).to eq([400, 300])
     end
 
-    xit 'executes script' do
-      p @driver.execute_script('[window.innerWidth, window.innerHeight]')
+    it 'executes script' do
+      expect(@driver.execute_script('return [window.innerWidth, window.innerHeight]')).to eq([400, 300])
     end
 
     it 'saves screenshot' do
@@ -84,7 +84,7 @@ module Capybara::Badook
     it 'retrieves response headers' do
       @driver.visit url('/')
 
-      expect(@driver.response_headers).to eq({:cache=>"no-cache", :content_length=>"74", :content_type=>"application/json;charset=UTF-8"})
+      expect(@driver.response_headers).to eq({ cache: 'no-cache', content_length: '74', content_type: 'application/json;charset=UTF-8' })
     end
 
     it 'retrieves status code' do
