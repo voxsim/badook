@@ -10,34 +10,14 @@ module Capybara
         @element_id = element_id
       end
 
-      def parents
-        # find 'css selector', '.row'
-        # find 'xpath', 'parent::*'
-        # command(:parents).map { |parent_id| self.class.new(driver, page_id, parent_id) }
-      end
+      # def all_text
+      # end
 
-      def find(method, selector)
-        # command(:find_within, method, selector).map { |id| self.class.new(driver, page_id, id) }
-      end
-
-      def find_xpath(selector)
-        find :xpath, selector
-      end
-
-      def find_css(selector)
-        find :css, selector
-      end
-
-      def all_text
-        get("/session/#{session_id}/element/#{element_id}/attribute/innerHTML").value
-      end
-
-      def visible_text
-        # filter_text command(:visible_text)
-      end
+      # def visible_text
+      # end
 
       def property(name)
-        # command :property, name
+        get("/session/#{session_id}/element/#{element_id}/property/#{name}").value
       end
 
       def [](name)
@@ -45,11 +25,12 @@ module Capybara
       end
 
       def attributes
+        get("/session/#{session_id}/element/#{element_id}/attributes").value
         # command :attributes
       end
 
       def value
-        # command :value
+        self[:value]
       end
 
       def set(value)
@@ -167,12 +148,6 @@ module Capybara
 
       def filter_text(text)
         Capybara::Helpers.normalize_whitespace(text.to_s)
-      end
-
-      def find(type, selector)
-        params = JSON.generate(using: type, value: selector)
-        response = post "/session/#{session_id}/element/#{element_id}/elements", params
-        Capybara::Badook::Node.new(self, session_id, response['value']['ELEMENT'])
       end
 
       def http_client
